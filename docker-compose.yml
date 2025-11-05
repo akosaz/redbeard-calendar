@@ -1,0 +1,64 @@
+version: '3.9'
+
+# Docker Compose for LOCAL DEVELOPMENT ONLY
+# For production deployment, see DEPLOYMENT.md or DEPLOYMENT-FREE.md
+
+services:
+  # PostgreSQL Database (Local Development)
+  # For production, use Supabase (free) or managed PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    container_name: redbeard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-redbeard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-redbeard_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-redbeard_calendar}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Optional: backup directory
+      # - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-redbeard}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redbeard-network
+
+  # Backend API (Fastify) - Optional for local testing
+  # In production, deploy to Railway/Render (free) or VPS
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: redbeard-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-redbeard}:${POSTGRES_PASSWORD:-redbeard_dev_password}@postgres:5432/${POSTGRES_DB:-redbeard_calendar}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-in-production}
+      PORT: 8080
+      NODE_ENV: production
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - redbeard-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  redbeard-network:
+    driver: bridge
