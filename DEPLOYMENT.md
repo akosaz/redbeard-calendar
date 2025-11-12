@@ -97,12 +97,17 @@ POSTGRES_PORT=5432
 # Backend Configuration
 BACKEND_PORT=8080
 ADMIN_PASSWORD=YOUR_SECURE_ADMIN_PASSWORD_HERE
+
+# Frontend URL (for CORS) - Update after deploying frontend
+FRONTEND_URL=https://your-vercel-domain.vercel.app
 ```
 
 **IMPORTANT**: Use strong passwords! Generate them with:
 ```bash
 openssl rand -base64 32
 ```
+
+**Note on FRONTEND_URL**: This allows the backend to accept requests only from your frontend domain. Update it after you deploy the frontend to Vercel.
 
 ### Step 3: Build and Start Services
 

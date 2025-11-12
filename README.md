@@ -188,19 +188,45 @@ Better for high-traffic apps or when you need full control.
 ### Backend (`backend/.env`)
 
 ```env
+# Database (local or Supabase)
 DATABASE_URL=postgresql://user:password@localhost:5432/redbeard_calendar
+
+# Security
 ADMIN_PASSWORD=your-secure-password
+
+# Server configuration
 PORT=8080
 NODE_ENV=development
+
+# Frontend URL for CORS (configurable per deployment)
+FRONTEND_URL=http://localhost:3000
 ```
 
 ### Frontend (`frontend/.env.local`)
 
 ```env
+# Backend API URL (matches backend server)
 NEXT_PUBLIC_API_URL=http://localhost:8080
+
+# Admin configuration
 ADMIN_PASSWORD=your-secure-password
 ADMIN_ROUTE_SLUG=your-secret-admin-route
 ADMIN_COOKIE=redbeard_admin_session
+```
+
+### Production Deployment
+
+When deploying to production, update both frontend and backend URLs to match:
+
+**Backend** (`backend/.env`):
+```env
+FRONTEND_URL=https://your-vercel-domain.vercel.app
+DATABASE_URL=postgresql://postgres:[PASSWORD]@db.supabase.co:5432/postgres
+```
+
+**Frontend** (Vercel dashboard):
+```env
+NEXT_PUBLIC_API_URL=https://your-backend-url.railway.app
 ```
 
 ---

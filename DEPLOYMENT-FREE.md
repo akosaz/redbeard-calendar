@@ -158,11 +158,14 @@ In Railway dashboard:
 ```env
 DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.xxx.supabase.co:5432/postgres
 ADMIN_PASSWORD=your-secure-admin-password
+FRONTEND_URL=https://your-vercel-domain.vercel.app
 PORT=8080
 NODE_ENV=production
 ```
 
 3. Click **Deploy** to restart with new variables
+
+**Note**: Update `FRONTEND_URL` after deploying frontend to Vercel (see Step 4)
 
 ### Step 4: Get Backend URL
 

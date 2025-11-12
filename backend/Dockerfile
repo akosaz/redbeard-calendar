@@ -5,12 +5,12 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files (required for npm ci)
+COPY package.json package-lock.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (using exact versions from package-lock.json)
+RUN npm ci --verbose
 
 # Copy source code
 COPY src ./src
@@ -24,7 +24,7 @@ FROM node:24-alpine AS production
 WORKDIR /app
 
 # Install production dependencies only
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci --only=production
 
 # Copy built application from builder stage
