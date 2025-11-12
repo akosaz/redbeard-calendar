@@ -32,10 +32,22 @@ const fastify = Fastify({
 });
 
 // Register CORS
-// NOTE: Currently allowing all origins for development
-// TODO: In production, restrict to specific frontend domain(s)
+const corsOrigins =
+  env.NODE_ENV === "production"
+    ? env.FRONTEND_URL
+    : [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://192.168.1.11:3000",
+        "http://192.168.1.11:3001",
+      ];
+
 fastify.register(cors, {
-  origin: true, // Allow all origins - CHANGE THIS IN PRODUCTION
+  origin: corsOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
 });
 
 // Register rate limiting

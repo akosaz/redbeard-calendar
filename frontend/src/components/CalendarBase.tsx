@@ -1,12 +1,11 @@
 'use client';
 
 import React from "react";
+import Image from "next/image";
 import { useI18n } from "@/app/i18n-provider";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { t } from "@/lib/i18n";
-
-type DayStatus = 'available' | 'limited' | 'finished';
-type DaysMap = Record<string, DayStatus>;
+import { getAvailability, updateDayStatus, type DayStatus, type DaysMap, type MonthAvailabilityResponse } from "@/lib/api";
 
 export default function CalendarBase({ isAdmin }: { isAdmin: boolean }) {
 
@@ -22,10 +21,10 @@ export default function CalendarBase({ isAdmin }: { isAdmin: boolean }) {
   React.useEffect(() => {
     let ignore = false;
     setLoading(true);
-    fetch(`/backend/api/availability?year=${year}&month=${month}`, { cache: 'no-store' })
-      .then(r => r.json())
-      .then(data => {
+    getAvailability(year, month)
+      .then((data: MonthAvailabilityResponse) => {
         if (!ignore) setDays(data.days || {});
+        setError(null);
       })
       .catch(() => setError('Failed to load'))
       .finally(() => setLoading(false));
@@ -75,13 +74,9 @@ export default function CalendarBase({ isAdmin }: { isAdmin: boolean }) {
     const password = (typeof window !== 'undefined' && localStorage.getItem('admin_pw')) || '';
 
     try {
-      setDays(prev => ({ ...prev, [k]: next })); // optimistic
-      const res = await fetch(`/backend/api/availability`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: k, status: next, password })
-      });
-      if (!res.ok) throw new Error('Failed');
+      setDays((prev: DaysMap) => ({ ...prev, [k]: next })); // optimistic
+      await updateDayStatus(k, next, password);
+      setError(null);
     } catch {
       setError('Update failed');
     }
@@ -103,9 +98,9 @@ export default function CalendarBase({ isAdmin }: { isAdmin: boolean }) {
       <header className="px-4 py-3 sm:px-6 sm:py-4 border-b bg-white top-0 z-10">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           {isAdmin && (
-            <div>
-              <span className="px-3 py-2 rounded-full border hover:bg-gray-100">✏</span>
-              <div className="font-semibold text-lg text-red-500">ADMIN</div>
+            <div className="flex items-center text-3xl">
+              <span className="px-3 py-2me-2">✏</span>
+              <div className="font-semibold text-red-500">ADMIN</div>
             </div>
           )
           }
@@ -128,8 +123,10 @@ export default function CalendarBase({ isAdmin }: { isAdmin: boolean }) {
         </div>
 
         <div className="max-w-3xl mx-auto">
-          {loading && <div className="mb-3 text-sm text-gray-500">{t(lang, 'loading')}</div>}
-          {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
+          <div className="flex justify-center">
+            {loading && <div className="mb-3 text-sm text-gray-500">{t(lang, 'loading')}</div>}
+            {error && <div className="mb-3 font-bold bg-amber-200 text-red-600 text-center rounded-full p-2">{t(lang, 'error_loading')}</div>}
+          </div>
 
           {/* Weekday header */}
           <div className="grid grid-cols-7 gap-2 text-base sm:text-base font-bold mb-2 select-none">
@@ -190,7 +187,7 @@ export default function CalendarBase({ isAdmin }: { isAdmin: boolean }) {
       {/* Footer */}
       <footer className="px-4 sm:px-6 py-8 bg-white">
         <div className="max-w-3xl mx-auto flex items-center justify-center">
-          <img src="/logo_b.png" alt="Logo" className="h-20" />
+          <Image src="/logo_b.png" alt="Logo" width={80} height={80} />
         </div>
       </footer>
     </div>

@@ -8,6 +8,7 @@ const envSchema = z.object({
   PORT: z.string().default("8080").transform(Number),
   ADMIN_PASSWORD: z.string().min(1, "ADMIN_PASSWORD is required"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  FRONTEND_URL: z.string().optional().default("http://localhost:3000"),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -18,7 +18,8 @@ export const resources: Record<Lang, Record<string, string>> = {
     cancel: 'Cancel',
     prev: 'Previous month',
     next: 'Next month',
-    loading: 'Loading...'
+    loading: 'Loading...',
+    error_loading: 'Loading error 🙁'
   },
   it: {
     business_name: 'Pasticceria Barbarossa',
@@ -37,7 +38,8 @@ export const resources: Record<Lang, Record<string, string>> = {
     cancel: 'Annulla',
     prev: 'Mese precedente',
     next: 'Mese successivo',
-    loading: 'Caricamento...'
+    loading: 'Caricamento...',
+    error_loading: 'Errore di caricamento 🙁'
   }
 };
 

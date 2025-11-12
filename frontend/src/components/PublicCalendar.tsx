@@ -1,5 +1,3 @@
-'use client';
-
 import CalendarBase from "./CalendarBase";
 
 export default function PublicCalendar() {
