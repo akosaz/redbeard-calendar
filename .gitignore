@@ -58,3 +58,7 @@ coverage/
 
 # docker
 /backups
+
+# claude code
+.claude/
+.mcp.json

@@ -31,6 +31,8 @@ describe('Environment Validation', () => {
   it('should use default values for optional variables', () => {
     process.env.DATABASE_URL = 'postgresql://user:pass@localhost:5432/db';
     process.env.ADMIN_PASSWORD = 'test-password-123';
+    delete process.env.PORT;
+    delete process.env.NODE_ENV;
 
     const env = validateEnv();
 
