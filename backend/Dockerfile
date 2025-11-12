@@ -8,6 +8,9 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
+# Copy workspace package files (needed for npm ci to work with workspaces)
+COPY backend/package.json ./backend/
+
 # Install dependencies
 RUN npm ci --verbose
 
