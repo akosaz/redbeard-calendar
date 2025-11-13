@@ -1,7 +1,7 @@
 # Multi-stage build for optimized Next.js production image
 
 # Stage 1: Dependencies
-FROM node:24-alpine AS deps
+FROM node:25-alpine AS deps
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY frontend/package.json ./frontend/
 RUN npm ci --verbose
 
 # Stage 2: Builder
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ WORKDIR /app/frontend
 RUN npm run build
 
 # Stage 3: Production
-FROM node:24-alpine AS production
+FROM node:25-alpine AS production
 
 WORKDIR /app
 
