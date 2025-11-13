@@ -32,8 +32,8 @@ services:
   # In production, deploy to Railway/Render (free) or VPS
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: redbeard-backend
     restart: unless-stopped
     environment:
@@ -50,6 +50,30 @@ services:
       - redbeard-network
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Next.js) - Optional for local testing
+  # In production, deploy to Vercel/Netlify (free) or VPS
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: redbeard-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://backend:8080
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    networks:
+      - redbeard-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
