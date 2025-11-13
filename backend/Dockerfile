@@ -1,7 +1,7 @@
 # Multi-stage build for optimized production image
 
 # Stage 1: Build
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ COPY backend ./backend
 RUN npm run build --workspace=backend
 
 # Stage 2: Production
-FROM node:24-alpine AS production
+FROM node:25-alpine AS production
 
 WORKDIR /app
 
